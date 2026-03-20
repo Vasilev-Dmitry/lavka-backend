@@ -1,0 +1,46 @@
+from app.limiter import limiter
+from fastapi import APIRouter, Request, Response, Depends
+from fastapi.responses import RedirectResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database.base import get_session
+import app.schemas as schemas
+from app.services.auth import Auth
+from app.utils.google import oauth
+
+router = APIRouter()
+
+@router.post("/login", summary="Войти", response_model=schemas.Response,
+             responses={500: {"model": schemas.ErrorMessage}, 429: {"model": schemas.ErrorMessage}})
+@limiter.limit("5/minute")
+async def login(request: Request, data: schemas.SellerLogin):
+    return await Auth.login(str(data.email))
+
+@router.post("/verify", summary="Проверить код из письма", response_model=schemas.Response,
+             responses={500: {"model": schemas.ErrorMessage}, 401: {"model": schemas.ErrorMessage}, 429: {"model": schemas.ErrorMessage}})
+@limiter.limit("5/minute")
+async def verify(request: Request, response: Response, data: schemas.SellerVerify, session: AsyncSession = Depends(get_session)):
+    return await Auth.verify(data.code, response, session)
+
+@router.post("/refresh", summary="Обновить cookie", response_model=schemas.Response,
+             responses={401: {"model": schemas.ErrorMessage}, 429: {"model": schemas.ErrorMessage}})
+@limiter.limit("5/minute")
+async def refresh(request: Request, response: Response):
+    return await Auth.refresh(request, response)
+
+@router.get("/google/login", summary="Войти с помощью Google", response_class=RedirectResponse,
+            status_code=302, responses={429: {'model': schemas.ErrorMessage}})
+@limiter.limit("5/minute")
+async def google_login(request: Request):
+    redirect_uri = request.url_for("google_auth")
+    return await oauth.google.authorize_redirect(request, str(redirect_uri))
+
+@router.get("/google/callback", summary="Обработка ответа от Google", name="google_auth",
+            responses={400: {'model': schemas.ErrorMessage}, 500: {"model": schemas.ErrorMessage}})
+async def google_callback(request: Request, response: Response, session: AsyncSession = Depends(get_session)):
+    return await Auth.google_callback(request, response, session)
+
+@router.post("/logout", summary="Выйти", response_model=schemas.Response,
+             responses={429: {"model": schemas.ErrorMessage}})
+@limiter.limit("5/minute")
+async def logout(request: Request, response: Response):
+    return await Auth.logout(response)
