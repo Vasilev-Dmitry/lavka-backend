@@ -1,3 +1,7 @@
+from contextlib import asynccontextmanager
+
+import httpx
+
 from app.limiter import limiter
 from app.routers import main_router
 from app.config import settings
@@ -10,12 +14,28 @@ from slowapi import _rate_limit_exceeded_handler
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from app.utils.subscriptions import check_subscriptions
+
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
     send_default_pii=True,
 )
 
-app = FastAPI(title=settings.TITLE, version=settings.VERSION)
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    application.state.http_client = httpx.AsyncClient()
+
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(check_subscriptions, "cron", hour=9, minute=0)
+    scheduler.start()
+
+    yield
+
+    scheduler.shutdown()
+    await application.state.http_client.aclose()
+
+app = FastAPI(title=settings.TITLE, version=settings.VERSION, lifespan=lifespan)
 app.add_middleware(CORSMiddleware,
                    allow_origins=["http://localhost:3000", "https://accounts.google.com"],
                    allow_methods=["*"],

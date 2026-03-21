@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     TITLE: str
     VERSION: str
     IS_PRODUCTION: bool
+    SUBSCRIPTION_PRICE: int
 
     SECRET_KEY: str
     ALGORITHM: str
@@ -21,5 +22,9 @@ class Settings(BaseSettings):
 
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str
+
+    CRYPTOCLOUD_CREATE_INVOICE: str
+    CRYPTOCLOUD_API_KEY: str
+    CRYPTOCLOUD_SHOP_ID: str
 
 settings = Settings()

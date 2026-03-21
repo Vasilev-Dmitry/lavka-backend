@@ -12,3 +12,5 @@ resend
 sqlalchemy
 pyjwt
 starlette
+httpx
+apscheduler
