@@ -14,6 +14,7 @@ asyncpg
 alembic
 pyjwt
 starlette
+itsdangerous
 httpx
 apscheduler
 pydantic-extra-types
