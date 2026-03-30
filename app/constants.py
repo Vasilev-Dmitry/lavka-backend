@@ -4,6 +4,6 @@ RESERVED_SUBDOMAINS = frozenset({
     "static", "cdn", "assets", "dashboard", "shop",
 })
 
-SUBSCRIPTION_PRICE = 10
+SUBSCRIPTION_PRICE = 16
 
 PLAN_LIMITS = {"free": 5, "business": 1000}
