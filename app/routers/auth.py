@@ -1,10 +1,11 @@
-from app.limiter import limiter
+import app.schemas as schemas
+
 from fastapi import APIRouter, Request, Response, Depends
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.limiter import limiter
 from app.database.base import get_session
-import app.schemas as schemas
-from app.services.auth import Auth
+from app.services import Auth
 from app.utils.google import oauth
 
 router = APIRouter()

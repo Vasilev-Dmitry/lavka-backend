@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     TITLE: str
     VERSION: str
     IS_PRODUCTION: bool
-    SUBSCRIPTION_PRICE: int
+    FRONTEND_URL: str
 
     SECRET_KEY: str
     ALGORITHM: str
@@ -16,7 +16,14 @@ class Settings(BaseSettings):
     SENTRY_DSN: str
 
     DATABASE_URL: str
-    REDIS_URL: str
+    UPSTASH_REDIS_REST_URL: str
+    UPSTASH_REDIS_REST_TOKEN: str
+
+    S3_URL: str
+    S3_BUCKET: str
+    S3_KEY: str
+    S3_SECRET: str
+    S3_REGION: str
 
     RESEND_API_KEY: str
 
@@ -26,5 +33,9 @@ class Settings(BaseSettings):
     CRYPTOCLOUD_CREATE_INVOICE: str
     CRYPTOCLOUD_API_KEY: str
     CRYPTOCLOUD_SHOP_ID: str
+
+    VERCEL_URL: str
+    VERCEL_API_KEY: str
+    VERCEL_PROJECT_ID: str
 
 settings = Settings()

@@ -1,10 +1,11 @@
 import uuid
+import app.schemas as schemas
+
+from fastapi import APIRouter, Request, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.base import get_session
 from app.limiter import limiter
-from fastapi import APIRouter, Request, Depends
-import app.schemas as schemas
-from app.services.payments import Payments
+from app.services import Payments
 from app.utils.deps import verify_session
 
 router = APIRouter()

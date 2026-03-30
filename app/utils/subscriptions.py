@@ -68,3 +68,23 @@ async def check_subscriptions():
         except Exception as e:
             await session.rollback()
             sentry_logger.error("Subscription check failed", attributes={"error": str(e)})
+
+
+async def check_expired_invoices():
+    async with async_session() as session:
+        try:
+            from sqlalchemy import update
+            from app.database.models import Invoice
+
+            await session.execute(
+                update(Invoice)
+                .where(
+                    Invoice.status == "pending",
+                    Invoice.expires_at < datetime.now(UTC)
+                )
+                .values(status="expired")
+            )
+            await session.commit()
+        except Exception as e:
+            await session.rollback()
+            sentry_logger.error("Invoice expiry check failed", attributes={"error": str(e)})

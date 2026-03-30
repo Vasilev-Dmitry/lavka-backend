@@ -14,3 +14,8 @@ pyjwt
 starlette
 httpx
 apscheduler
+pydantic-extra-types
+upstash-redis
+botocore
+boto3
+pillow

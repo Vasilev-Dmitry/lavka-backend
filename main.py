@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from app.utils.subscriptions import check_subscriptions
+from app.utils.subscriptions import check_subscriptions, check_expired_invoices
 
 sentry_sdk.init(
     dsn=settings.SENTRY_DSN,
@@ -28,6 +28,7 @@ async def lifespan(application: FastAPI):
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(check_subscriptions, "cron", hour=9, minute=0)
+    scheduler.add_job(check_expired_invoices, "interval", minutes=30)
     scheduler.start()
 
     yield
@@ -37,7 +38,7 @@ async def lifespan(application: FastAPI):
 
 app = FastAPI(title=settings.TITLE, version=settings.VERSION, lifespan=lifespan)
 app.add_middleware(CORSMiddleware,
-                   allow_origins=["http://localhost:3000", "https://accounts.google.com"],
+                   allow_origins=[settings.FRONTEND_URL, "https://accounts.google.com"],
                    allow_methods=["*"],
                    allow_headers=["*"],
                    allow_credentials=True)
