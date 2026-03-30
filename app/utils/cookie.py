@@ -3,6 +3,7 @@ from app.config import settings
 
 def set_cookie(response, seller_id):
     refresh_token = create_refresh_token(seller_id)
+    domain = ".lavka.global" if settings.IS_PRODUCTION else None
 
     response.set_cookie(
         key="access_token",
@@ -11,6 +12,7 @@ def set_cookie(response, seller_id):
         expires=settings.ACCESS_TOKEN_EXPIRE_TIME,
         samesite="lax",
         secure=settings.IS_PRODUCTION,
+        domain=domain,
         path="/"
     )
     response.set_cookie(
@@ -20,6 +22,7 @@ def set_cookie(response, seller_id):
         expires=settings.REFRESH_TOKEN_EXPIRE_TIME,
         samesite="lax",
         secure=settings.IS_PRODUCTION,
+        domain=domain,
         path="/"
     )
 
