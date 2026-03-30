@@ -6,7 +6,7 @@ python-multipart==0.0.22
 pydantic-settings
 sentry-sdk
 authlib
-pydantic
+pydantic[email]
 redis
 resend
 sqlalchemy
