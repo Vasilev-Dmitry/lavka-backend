@@ -10,6 +10,7 @@ pydantic
 redis
 resend
 sqlalchemy
+asyncpg
 pyjwt
 starlette
 httpx

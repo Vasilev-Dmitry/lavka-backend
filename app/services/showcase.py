@@ -72,7 +72,7 @@ class Showcase:
         try:
             if cached := await redis.get(Showcase._products_cache_key(domain)):
                 try:
-                    return [schemas.ShowcaseProduct.model_validate_json(item) for item in json.loads(cached)]
+                    return [schemas.ShowcaseProduct.model_validate(item) for item in json.loads(cached)]
                 except Exception:
                     await redis.delete(Showcase._products_cache_key(domain))
 
@@ -88,7 +88,7 @@ class Showcase:
 
             await redis.set(
                 Showcase._products_cache_key(domain),
-                json.dumps([p.model_dump_json() for p in products_data]),
+                json.dumps([p.model_dump(mode="json") for p in products_data]),
                 ex=Showcase.PRODUCTS_CACHE_TTL,
             )
             return products_data
@@ -104,7 +104,7 @@ class Showcase:
         try:
             if cached := await redis.get(Showcase._products_cache_key(domain)):
                 try:
-                    products = [schemas.ShowcaseProduct.model_validate_json(item) for item in json.loads(cached)]
+                    products = [schemas.ShowcaseProduct.model_validate(item) for item in json.loads(cached)]
                     product = next((p for p in products if p.id == product_id), None)
                     if product:
                         return product

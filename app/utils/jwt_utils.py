@@ -7,13 +7,13 @@ from datetime import datetime, timedelta, UTC
 secret = settings.SECRET_KEY
 algorithm = settings.ALGORITHM
 
-access_token_expires = settings.ACCESS_TOKEN_EXPIRE_MINUTES
-refresh_token_expires = settings.REFRESH_TOKEN_EXPIRE_DAYS
+access_token_expires = settings.ACCESS_TOKEN_EXPIRE_TIME
+refresh_token_expires = settings.REFRESH_TOKEN_EXPIRE_TIME
 
 def create_access_token(seller_id: uuid.UUID) -> str:
     payload = {
         "sub": str(seller_id),
-        "exp": datetime.now(UTC) + timedelta(minutes=access_token_expires),
+        "exp": datetime.now(UTC) + timedelta(seconds=access_token_expires),
         "type": "access"
     }
     return jwt.encode(payload, secret, algorithm=algorithm)
@@ -21,7 +21,7 @@ def create_access_token(seller_id: uuid.UUID) -> str:
 def create_refresh_token(seller_id: uuid.UUID) -> str:
     payload = {
         "sub": str(seller_id),
-        "exp": datetime.now(UTC) + timedelta(days=refresh_token_expires),
+        "exp": datetime.now(UTC) + timedelta(seconds=refresh_token_expires),
         "type": "refresh"
     }
     return jwt.encode(payload, secret, algorithm=algorithm)

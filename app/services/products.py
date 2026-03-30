@@ -64,7 +64,7 @@ class Products:
         try:
             if cached := await redis.get(Products._cache_key(seller_id)):
                 try:
-                    return [schemas.ProductResponse.model_validate_json(item) for item in json.loads(cached)]
+                    return [schemas.ProductResponse.model_validate(item) for item in json.loads(cached)]
                 except Exception:
                     await redis.delete(Products._cache_key(seller_id))
 
@@ -79,7 +79,7 @@ class Products:
 
             await redis.set(
                 Products._cache_key(seller_id),
-                json.dumps([p.model_dump_json() for p in products_data]),
+                json.dumps([p.model_dump(mode="json") for p in products_data]),
                 ex=Products.CACHE_TTL,
             )
             return products_data

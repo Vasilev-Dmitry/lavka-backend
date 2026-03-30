@@ -29,7 +29,7 @@ class Auth:
             raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Account is blocked")
 
         await redis.set(f"seller:{seller.id}", SellerResponse.model_validate(seller).model_dump_json(), ex=600)
-        await redis.set(f"refresh:{seller.id}", set_cookie(response, seller.id), ex=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        await redis.set(f"refresh:{seller.id}", set_cookie(response, seller.id), ex=settings.REFRESH_TOKEN_EXPIRE_TIME)
 
         return Response(success=True, message="Successfully authenticated")
 
@@ -98,7 +98,7 @@ class Auth:
                 raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Account is blocked")
 
         await redis.delete(f"refresh:{seller_id}")
-        await redis.set(f"refresh:{seller_id}", set_cookie(response, seller_id), ex=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+        await redis.set(f"refresh:{seller_id}", set_cookie(response, seller_id), ex=settings.REFRESH_TOKEN_EXPIRE_TIME)
 
         return Response(success=True, message="Tokens refreshed")
 

@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.executors.asyncio import AsyncIOExecutor
 from app.utils.subscriptions import check_subscriptions, check_expired_invoices
 
 sentry_sdk.init(
@@ -26,7 +27,7 @@ sentry_sdk.init(
 async def lifespan(application: FastAPI):
     application.state.http_client = httpx.AsyncClient()
 
-    scheduler = AsyncIOScheduler()
+    scheduler = AsyncIOScheduler(timezone="UTC", executors={"default": AsyncIOExecutor()})
     scheduler.add_job(check_subscriptions, "cron", hour=9, minute=0)
     scheduler.add_job(check_expired_invoices, "interval", minutes=30)
     scheduler.start()
@@ -36,10 +37,15 @@ async def lifespan(application: FastAPI):
     scheduler.shutdown()
     await application.state.http_client.aclose()
 
+origins = [settings.FRONTEND_URL, "https://accounts.google.com"]
+if settings.EXTRA_CORS_ORIGINS:
+    origins += [o.strip() for o in settings.EXTRA_CORS_ORIGINS.split(",") if o.strip()]
+
 app = FastAPI(title=settings.TITLE, version=settings.VERSION, lifespan=lifespan)
 app.add_middleware(CORSMiddleware,
-                   allow_origins=[settings.FRONTEND_URL, "https://accounts.google.com"],
-                   allow_methods=["*"],
+                   allow_origins=origins,
+                   allow_origin_regex=r"https://[a-zA-Z0-9-]+\.lavka\.global",
+                   allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
                    allow_headers=["*"],
                    allow_credentials=True)
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)

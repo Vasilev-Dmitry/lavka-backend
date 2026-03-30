@@ -2,6 +2,7 @@ import uuid
 import io
 import asyncio
 import boto3
+from urllib.parse import urlparse
 
 from PIL import Image
 from fastapi import HTTPException, status
@@ -53,7 +54,11 @@ async def upload_image(file_bytes: bytes, folder: str) -> str:
 
 
 async def delete_image(url: str) -> None:
-    key = "/".join(url.split("/")[4:])
+    parsed = urlparse(url)
+    bucket_prefix = f"/{settings.S3_BUCKET}/"
+    key = parsed.path[len(bucket_prefix):] if parsed.path.startswith(bucket_prefix) else None
+    if not key:
+        return
     try:
         await asyncio.to_thread(_delete, key)
     except (BotoCoreError, ClientError):

@@ -8,7 +8,7 @@ def set_cookie(response, seller_id):
         key="access_token",
         value=create_access_token(seller_id),
         httponly=True,
-        expires=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        expires=settings.ACCESS_TOKEN_EXPIRE_TIME,
         samesite="lax",
         secure=settings.IS_PRODUCTION,
         path="/"
@@ -17,7 +17,7 @@ def set_cookie(response, seller_id):
         key="refresh_token",
         value=refresh_token,
         httponly=True,
-        expires=settings.REFRESH_TOKEN_EXPIRE_DAYS,
+        expires=settings.REFRESH_TOKEN_EXPIRE_TIME,
         samesite="lax",
         secure=settings.IS_PRODUCTION,
         path="/"

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import settings
 from app.database.base import Base
-from app.database.models import seller
+from app.database.models import seller, shop, product, invoice
 
 config = context.config
 
