@@ -1,5 +1,6 @@
 import app.schemas as schemas
 
+from app.config import settings
 from fastapi import APIRouter, Request, Response, Depends
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,8 +33,7 @@ async def refresh(request: Request, response: Response, session: AsyncSession = 
             status_code=302, responses={429: {'model': schemas.ErrorMessage}})
 @limiter.limit("5/minute")
 async def google_login(request: Request):
-    redirect_uri = request.url_for("google_auth")
-    return await oauth.google.authorize_redirect(request, str(redirect_uri))
+    return await oauth.google.authorize_redirect(request, settings.GOOGLE_REDIRECT_URI)
 
 @router.get("/google/callback", summary="Обработка ответа от Google", name="google_auth",
             responses={400: {'model': schemas.ErrorMessage}, 403: {'model': schemas.ErrorMessage}, 500: {"model": schemas.ErrorMessage}})
