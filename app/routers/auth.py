@@ -36,9 +36,12 @@ async def google_login(request: Request):
     return await oauth.google.authorize_redirect(request, settings.GOOGLE_REDIRECT_URI)
 
 @router.get("/google/callback", summary="Обработка ответа от Google", name="google_auth",
+            response_class=RedirectResponse,
             responses={400: {'model': schemas.ErrorMessage}, 403: {'model': schemas.ErrorMessage}, 500: {"model": schemas.ErrorMessage}})
-async def google_callback(request: Request, response: Response, session: AsyncSession = Depends(get_session)):
-    return await Auth.google_callback(request, response, session)
+async def google_callback(request: Request, session: AsyncSession = Depends(get_session)):
+    redirect = RedirectResponse(url="https://app.lavka.global", status_code=302)
+    await Auth.google_callback(request, redirect, session)
+    return redirect
 
 @router.post("/logout", summary="Выйти", response_model=schemas.Response,
              responses={429: {"model": schemas.ErrorMessage}})
