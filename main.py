@@ -38,10 +38,10 @@ async def lifespan(application: FastAPI):
     await application.state.http_client.aclose()
 
 origins = [settings.FRONTEND_URL, "https://accounts.google.com"]
-if settings.EXTRA_CORS_ORIGINS:
-    origins += [o.strip() for o in settings.EXTRA_CORS_ORIGINS.split(",") if o.strip()]
 
-app = FastAPI(title=settings.TITLE, version=settings.VERSION, lifespan=lifespan)
+app = FastAPI(title=settings.TITLE, version=settings.VERSION, lifespan=lifespan, docs_url=None if settings.IS_PRODUCTION else "/docs",
+      redoc_url=None if settings.IS_PRODUCTION else "/redoc",
+)
 app.add_middleware(CORSMiddleware,
                    allow_origins=origins,
                    allow_origin_regex=r"https://[a-zA-Z0-9-]+\.lavka\.global",

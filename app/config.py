@@ -31,8 +31,6 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
     GOOGLE_REDIRECT_URI: str
 
-    EXTRA_CORS_ORIGINS: str = ""
-
     CRYPTOCLOUD_CREATE_INVOICE: str
     CRYPTOCLOUD_API_KEY: str
     CRYPTOCLOUD_SHOP_ID: str
