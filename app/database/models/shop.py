@@ -9,7 +9,7 @@ class Shop(Base):
     __tablename__ = "shops"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    seller_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("sellers.id"), unique=True, index=True)
+    seller_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("sellers.id", ondelete="CASCADE"), unique=True, index=True)
     name: Mapped[str] = mapped_column(String(64), index=True)
     description: Mapped[str | None] = mapped_column(String(256), nullable=True)
     domain: Mapped[str | None] = mapped_column(String(63), nullable=True, unique=True, index=True)

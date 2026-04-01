@@ -10,7 +10,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    shop_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("shops.id"), index=True)
+    shop_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("shops.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(64), index=True)
     description: Mapped[str | None] = mapped_column(String(512), nullable=True)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))

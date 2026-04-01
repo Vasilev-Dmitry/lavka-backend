@@ -1,7 +1,8 @@
 import app.schemas as schemas
 
+from uuid import UUID
 from app.config import settings
-from fastapi import APIRouter, Request, Response, Depends
+from fastapi import APIRouter, Request, Response, Depends, Path
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.limiter import limiter
@@ -17,11 +18,11 @@ router = APIRouter()
 async def login(request: Request, data: schemas.SellerLogin):
     return await Auth.login(str(data.email))
 
-@router.post("/verify", summary="Проверить код из письма", response_model=schemas.Response,
+@router.get("/verify/{code}", summary="Проверить код из письма", response_model=schemas.Response,
              responses={401: {"model": schemas.ErrorMessage}, 403: {"model": schemas.ErrorMessage}, 500: {"model": schemas.ErrorMessage}, 429: {"model": schemas.ErrorMessage}})
 @limiter.limit("5/minute")
-async def verify(request: Request, response: Response, data: schemas.SellerVerify, session: AsyncSession = Depends(get_session)):
-    return await Auth.verify(data.code, response, session)
+async def verify(request: Request, response: Response, code: UUID = Path(...), session: AsyncSession = Depends(get_session)):
+    return await Auth.verify(code, response, session)
 
 @router.post("/refresh", summary="Обновить cookie", response_model=schemas.Response,
              responses={401: {"model": schemas.ErrorMessage}, 403: {"model": schemas.ErrorMessage}, 429: {"model": schemas.ErrorMessage}})
