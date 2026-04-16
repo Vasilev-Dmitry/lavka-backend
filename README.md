@@ -20,6 +20,7 @@ Multi-tenant SaaS e-commerce platform for social media sellers (Instagram, Whats
 | Storage | S3-compatible bucket (Railway) |
 | Email | Resend |
 | Payments | Robokassa |
+| Monitoring | Sentry |
 | Hosting | Railway |
  
 ### ✨ Features
@@ -32,6 +33,7 @@ Multi-tenant SaaS e-commerce platform for social media sellers (Instagram, Whats
 - 🔄 **Caching** — Redis caching with cache invalidation across seller and public showcase keys
 - ⏰ **Scheduler** — APScheduler for subscription lifecycle management
 - 🗄️ **Migrations** — Alembic migrations on PostgreSQL
+- 🔍 **Monitoring** — Error tracking and logging via Sentry
 
 ## 📬 Contact
  
